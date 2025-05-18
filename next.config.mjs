@@ -10,16 +10,17 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Tarayıcı ortamı için geçici yardımcı değişkenler
+  // Ortam değişkenleri için varsayılan değerler
   env: {
-    NEXT_PUBLIC_FIREBASE_API_KEY: 'dummy-api-key-for-static-build',
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: 'dummy-domain.firebaseapp.com',
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID: 'dummy-project',
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: 'dummy-bucket.appspot.com',
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: '123456789',
-    NEXT_PUBLIC_FIREBASE_APP_ID: '1:123456789:web:abc123',
-    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: 'G-ABC123',
-    // Metadatabase URL
+    // Firebase yapılandırma değişkenleri
+    NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    // Metadata URL
     NEXT_PUBLIC_METADATA_BASE_URL: 'https://ogrenio.github.io'
   }
 };

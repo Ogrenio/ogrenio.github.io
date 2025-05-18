@@ -14,7 +14,7 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Tarayıcı ortamında ve sunucu tarafı oluşturma sırasında Firebase'in başlatılma şeklini kontrol eden değişken
+// Tarayıcı ortamında çalışıyoruz mu?
 const isBrowser = typeof window !== 'undefined';
 
 // Lazy initialize
@@ -22,12 +22,16 @@ let app: FirebaseApp | undefined = undefined;
 let db: any = undefined;
 let auth: any = undefined;
 
-// İstemci tarafında ve yalnızca bir kez başlat
-if (isBrowser && !app && firebaseConfig.apiKey !== 'dummy-api-key-for-static-build') {
-  const apps = getApps();
-  app = apps.length ? apps[0] : initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  auth = getAuth(app);
+// İstemci tarafında Firebase'i başlat
+if (isBrowser && !app) {
+  try {
+    const apps = getApps();
+    app = apps.length ? apps[0] : initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+  }
 }
 
 export { auth, db };
