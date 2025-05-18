@@ -11,13 +11,16 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl w-full mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
           <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/images/icon.png"
-              alt={siteDetails.siteName}
-              width={60}
-              height={60}
-              className="min-w-fit"
-            />
+            <div className="w-[40px] h-[40px] relative">
+              <Image
+                src="/images/icon.png"
+                alt={siteDetails.siteName}
+                width={40}
+                height={40}
+                className="object-contain"
+                style={{ maxWidth: '40px', height: 'auto' }}
+              />
+            </div>
             <h3 className="manrope text-xl font-semibold cursor-pointer">
               {siteDetails.siteName}
             </h3>

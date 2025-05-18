@@ -1,8 +1,9 @@
-// firebase-config.ts (yeni bir dosya oluşturabilirsiniz)
-import { initializeApp } from "firebase/app";
+// firebase-config.ts
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,8 +14,20 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Tarayıcı ortamında ve sunucu tarafı oluşturma sırasında Firebase'in başlatılma şeklini kontrol eden değişken
+const isBrowser = typeof window !== 'undefined';
 
-export { auth, db }; // auth ve db'yi dışa aktarıyoruz
+// Lazy initialize
+let app: FirebaseApp | undefined = undefined;
+let db: any = undefined;
+let auth: any = undefined;
+
+// İstemci tarafında ve yalnızca bir kez başlat
+if (isBrowser && !app && firebaseConfig.apiKey !== 'dummy-api-key-for-static-build') {
+  const apps = getApps();
+  app = apps.length ? apps[0] : initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+}
+
+export { auth, db };

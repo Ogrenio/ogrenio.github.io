@@ -49,6 +49,13 @@ h1, h2, h3, h4, h5, h6 {
   @apply w-fit h-10 sm:h-12;
 }
 
-.benefit-section:last-of-type > div {
-  @apply mb-10;
+/* Sosyal medya ikonları için boyut düzeltmesi */
+footer .min-w-fit {
+  @apply w-6 h-6;
+}
+
+/* Logo boyut düzeltmesi - sadece bu kalacak */
+.w-\[40px\] img {
+  max-width: 40px !important;
+  height: auto !important;
 }
