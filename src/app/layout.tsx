@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     description: siteDetails.metadata.description,
     images: ['/images/twitter-image.jpg'],
   },
+  metadataBase: new URL(siteDetails.siteUrl),
 };
 
 export default function RootLayout({

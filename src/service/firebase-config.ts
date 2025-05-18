@@ -1,8 +1,9 @@
 // firebase-config.ts (yeni bir dosya oluşturabilirsiniz)
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,8 +14,25 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Initialize Firebase conditionally - only if in browser environment or if credentials are available
+let app: FirebaseApp | undefined;
+let auth: any = {};
+let db: any = {};
 
-export { auth, db }; // auth ve db'yi dışa aktarıyoruz
+// Only initialize Firebase if we're in the browser and not in a static rendering context
+if (typeof window !== 'undefined') {
+  try {
+    if (getApps().length === 0) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApps()[0];
+    }
+    
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+  }
+}
+
+export { auth, db };
