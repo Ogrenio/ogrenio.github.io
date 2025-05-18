@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { siteDetails } from "@/data/siteDetails";
-import useAuth from "@/service/auth"; // useAuth hook'unu doğrudan import edin
+import useAuth from "@/service/auth"; 
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,12 +11,10 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
-  // useAuth hook'unu kullanarak errorMessage'ı doğrudan alın
   const {
     login,
     isLoading,
     errorMessage,
-    resetPassword,
   } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {

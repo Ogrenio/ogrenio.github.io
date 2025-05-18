@@ -12,7 +12,6 @@ import Stats from "@/components/Stats";
 import CTA from "@/components/CTA";
 // src/app/page.tsx
 import dynamic from "next/dynamic";
-import { useEffect } from 'react';
 
 // Header bileşenini dinamik olarak yükleyin
 const Header = dynamic(() => import("@/components/Header"), { ssr: false });

@@ -2,11 +2,7 @@
 
 import { 
   FiMenu, 
-  FiBell, 
-  FiUser, 
   FiLogOut, 
-  FiSettings, 
-  FiHelpCircle 
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import Link from "next/link";

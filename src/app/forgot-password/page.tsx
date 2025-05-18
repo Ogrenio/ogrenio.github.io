@@ -1,9 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { siteDetails } from '@/data/siteDetails'
 import { auth } from '@/service/firebase-config'
 import { sendPasswordResetEmail } from 'firebase/auth'
 
