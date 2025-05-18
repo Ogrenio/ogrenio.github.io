@@ -2,11 +2,14 @@
   "name": "ogrenio",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://ogrenio.github.io",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "next build",
+    "deploy": "gh-pages -d out"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.8",
