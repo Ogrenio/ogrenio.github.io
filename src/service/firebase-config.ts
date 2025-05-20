@@ -25,12 +25,25 @@ let auth: any = undefined;
 // İstemci tarafında Firebase'i başlat
 if (isBrowser && !app) {
   try {
+    // Yapılandırma değerlerini kontrol et
+    const missingConfigs = Object.entries(firebaseConfig)
+      .filter(([_, value]) => !value)
+      .map(([key]) => key);
+    
+    if (missingConfigs.length > 0) {
+      throw new Error(`Missing Firebase configuration values: ${missingConfigs.join(', ')}`);
+    }
+
     const apps = getApps();
     app = apps.length ? apps[0] : initializeApp(firebaseConfig);
     db = getFirestore(app);
     auth = getAuth(app);
   } catch (error) {
     console.error("Firebase initialization error:", error);
+    // Hata durumunda undefined döndür
+    app = undefined;
+    db = undefined;
+    auth = undefined;
   }
 }
 
