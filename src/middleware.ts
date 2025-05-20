@@ -1,8 +1,10 @@
-// middleware.ts
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+// middleware.ts - DEVRE DIŞI BIRAKILDI (statik export ile uyumsuz)
+// import { NextResponse } from 'next/server'
+// import type { NextRequest } from 'next/server'
 
-// middleware.ts
+// Statik export (output: 'export') kullanırken middleware çalışmaz
+// Bu fonksiyonu yorum satırına aldık. Client-side kimlik doğrulama kullanılmalıdır.
+/*
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   const protectedRoutes = ['/dashboard']
@@ -17,3 +19,4 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next()
 }
+*/

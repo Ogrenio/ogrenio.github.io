@@ -13,7 +13,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 }*/ 
 
 import { ReactNode } from "react";
-import Footer from "@/components/Footer";
 import HeaderDashboard from "../../components/HeaderDashboard";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -21,7 +20,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="relative z-50">
             <HeaderDashboard /> 
             <main>{children}</main>
-            <Footer />
         </div>
     );
 } 
