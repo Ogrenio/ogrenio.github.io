@@ -12,20 +12,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   );
 }*/ 
 
- import { ReactNode } from "react";
+import { ReactNode } from "react";
 import Footer from "@/components/Footer";
-import HeaderDashboard from "../../components/HeaderDashboard";  
-//import { Source_Sans_3, Manrope } from "next/font/google";
-
-//const manrope = Manrope({ subsets: ['latin'] });
-//const sourceSans = Source_Sans_3({ subsets: ['latin'] });
+import HeaderDashboard from "../../components/HeaderDashboard";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     return (
-            <body className="antialiased">
-                <HeaderDashboard /> 
-                <main>{children}</main>
-                <Footer />
-            </body>
+        <div className="relative z-50">
+            <HeaderDashboard /> 
+            <main>{children}</main>
+            <Footer />
+        </div>
     );
 } 

@@ -31,7 +31,7 @@ const FAQ: React.FC = () => {
                                             {open ? <BiMinus className="w-5 h-5 text-secondary" /> : <BiPlus className="w-5 h-5 text-secondary" />}
                                         </DisclosureButton>
                                         <DisclosurePanel className="px-4 pt-4 pb-2 text-foreground-accent">
-                                            {faq.answer}
+                                            <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                                         </DisclosurePanel>
                                     </>
                                 )}

@@ -31,7 +31,7 @@ if (isBrowser && !app) {
       .map(([key]) => key);
     
     if (missingConfigs.length > 0) {
-      throw new Error(`Missing Firebase configuration values: ${missingConfigs.join(', ')}`);
+      throw new Error(`Missing Firebase configuration values`);
     }
 
     const apps = getApps();

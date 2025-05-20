@@ -4,7 +4,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   distDir: 'out',  
-  output: 'export',
   basePath: '',
   assetPrefix: '',
   images: {
