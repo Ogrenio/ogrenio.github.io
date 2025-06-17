@@ -81,10 +81,9 @@ const Footer: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="mt-8 md:text-center text-foreground-accent px-6 text-md">
-        <p>
-          Copyright &copy; {new Date().getFullYear()} {siteDetails.siteName}.
-          Tüm Hakları saklıdır.
+      <div className="mt-8 pt-8 border-t border-gray-200">
+        <p className="text-center text-gray-400">
+          © {new Date().getFullYear()} Öğrenio. Tüm hakları saklıdır.
         </p>
       </div>
     </footer>

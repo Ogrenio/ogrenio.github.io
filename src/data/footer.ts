@@ -7,23 +7,23 @@ export const footerDetails: {
   telephone: string;
   socials: ISocials;
 } = {
-  subheading: "Yapay zekâ destekli eğitim araçlarıyla güçlenen geleceğin öğrenme deneyimini sunuyoruz.",
+  subheading: "Öğrenio ile çocuğunuzun öğrenme yolculuğuna katılın",
   quickLinks: [
     {
-      text: "Özellikler",
-      url: "#features"
+      text: "Hizmet Şartları",
+      url: "/terms-of-service",
     },
     {
-      text: "Örnek Etkinlikler",
-      url: "#activities"
+      text: "Gizlilik Sözleşmesi",
+      url: "/privacy-policy",
     },
     {
       text: "SSS",
-      url: "#faq"
-    }
+      url: "/faq",
+    },
   ],
   email: "ogrenioapp@gmail.com",
-  telephone: "+90 (212) 555 01 23",
+  telephone: "+90 850 123 45 67",
   socials: {
     twitter: "https://twitter.com/OgrenioApp",
     facebook: "https://facebook.com/OgrenioApp",
