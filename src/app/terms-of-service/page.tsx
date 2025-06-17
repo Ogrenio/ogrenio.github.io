@@ -129,7 +129,7 @@ const TermsOfServicePage = () => {
 
               <h3 className="text-xl font-semibold mt-6 mb-3">4.1.6. Abonelik İptali</h3>
               <p className="mb-4">
-                Aboneliğinizi iptal etmek isterseniz, bunu uygulama içinden "Paketler > Geçmiş Satın Alımlarım > Aboneliği İptal Et" bölümüne girerek veya aboneliği gerçekleştirdiğiniz platformun iptal süreciyle (örneğin App Store veya Google Play) yapabilirsiniz. İptal işlemi, bir sonraki faturalama dönemine kadar geçerli olur; o dönem sona erene kadar hizmetten faydalanmaya devam edebilirsiniz.
+                Aboneliğinizi iptal etmek isterseniz, bunu uygulama içinden "Paketler &gt; Geçmiş Satın Alımlarım &gt; Aboneliği İptal Et" bölümüne girerek veya aboneliği gerçekleştirdiğiniz platformun iptal süreciyle (örneğin App Store veya Google Play) yapabilirsiniz. İptal işlemi, bir sonraki faturalama dönemine kadar geçerli olur; o dönem sona erene kadar hizmetten faydalanmaya devam edebilirsiniz.
               </p>
               <p className="mb-4">
                 İptal edilen abonelikler için, yasal zorunluluklar dışında iade yapılmaz.
