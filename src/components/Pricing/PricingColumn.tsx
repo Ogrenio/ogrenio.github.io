@@ -17,7 +17,14 @@ const PricingColumn: React.FC<Props> = ({ tier, highlight }: Props) => {
                 <h3 className="text-2xl font-semibold mb-4">{name}</h3>
                 <p className="text-3xl md:text-5xl font-bold mb-6">
                     <span className={clsx({ "text-secondary": highlight })}>
-                        {typeof price === 'number' ? `₺${price}` : price}
+                        {typeof price === 'number' ? (
+                            <>
+                                <span>₺{price}</span>
+                                {name === 'Profesyonel' && (
+                                    <span className="text-lg font-normal text-gray-400 line-through ml-2">₺100</span>
+                                )}
+                            </>
+                        ) : price}
                     </span>
                     {typeof price === 'number' && <span className="text-lg font-normal text-gray-600">/aylık</span>}
                 </p>
