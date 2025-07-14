@@ -13,7 +13,7 @@ export const tiers: IPricing[] = [
   },
   {
     name: 'Profesyonel',
-    price: 49,
+    price: 59,
     features: [
       'İleri düzey yapay zekâ analizi',
       '5 kullanıcıya kadar',

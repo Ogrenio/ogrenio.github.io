@@ -44,18 +44,20 @@ const HomePage: React.FC = () => {
         >
           <Pricing />
         </Section>
-
-        <Section
+        {/*<Section
           id="testimonials"
           title="Müşterilerimiz Ne Diyor?"
           description="Bizimle çalışanların yorumlarını dinleyin."
         >
           <Testimonials />
-        </Section>
+        </Section>*/ }
+
+
+        
 
         <FAQ />
 
-        <Stats />
+         {/*<Stats />*/ } 
 
         <CTA />
       </Container>
