@@ -1,56 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import useAuth from "@/service/auth";
+import { siteDetails } from "@/data/siteDetails";
+import useAuth from "@/service/auth"; // useAuth hook'unu doğrudan import edin
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const [clientError, setClientError] = useState("");
   const router = useRouter();
 
-  const { login, isLoading, errorMessage } = useAuth();
-
-  // Sadece istemci tarafında olduğumuzdan emin olmak için
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // useAuth hook'unu kullanarak errorMessage'ı doğrudan alın
+  const {
+    login,
+    isLoading,
+    errorMessage,
+    resetPassword,
+  } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      // useAuth'daki login fonksiyonunu kullanın
-      const user = await login(email, password, rememberMe);
-      if (user) {
-        router.push("/dashboard");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setClientError("Giriş yapılırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+    // useAuth'daki login fonksiyonunu kullanın
+    const user = await login(email, password, rememberMe);
+    if (user) {
+      router.push("/dashboard");
     }
   };
-
-  // İstemci tarafında olana kadar bekle
-  if (!isMounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center py-36 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md">
-          <div className="bg-white p-10 rounded-2xl shadow-xl">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Yükleniyor...
-              </h1>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-36 px-4 sm:px-6 lg:px-8">
@@ -66,10 +45,10 @@ export default function LoginPage() {
             <p className="text-gray-500">Hesabınıza giriş yapın</p>
           </div>
 
-          {/* Hata mesajı gösterimi */}
-          {(errorMessage || clientError) && (
+          {/* Hata mesajı gösterimi - artık useAuth'tan gelen errorMessage kullanılıyor */}
+          {errorMessage && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-              {errorMessage || clientError}
+              {errorMessage}
             </div>
           )}
 

@@ -17,7 +17,7 @@ type AuthHookReturn = {
   isStudent: boolean;
   kurum: string | null; // Kurum adı
   kurumId: string | null; // Yeni eklenen kurum ID alanı
-  kurumKontejan: number | null; // Yeni eklenen alan
+    kurumKontejan: number | null; // Yeni eklenen alan
 
   isLoading: boolean;
   errorMessage: string | null;
@@ -38,7 +38,6 @@ const authErrorMessages: Record<string, string> = {
   'auth/requires-recent-login': 'Bu işlem için son zamanlarda giriş yapmış olmanız gerekiyor',
   'auth/email-not-verified': 'Lütfen email adresinizi doğrulayın',
   'auth/institution-not-found': 'Kurum bilgisi bulunamadı. Giriş yapamazsınız. Lütfen kurum paketi anlaşması sağlamak için iletişime geçiniz: yapayline@gmail.com',
-  'auth/invalid-api-key': 'Firebase yapılandırma hatası. Lütfen yönetici ile iletişime geçin.',
 };
 
 const useAuth = (): AuthHookReturn => {
@@ -46,7 +45,7 @@ const useAuth = (): AuthHookReturn => {
   const [isStudent, setIsStudent] = useState<boolean>(false);
   const [kurum, setKurum] = useState<string | null>(null);
   const [kurumId, setKurumId] = useState<string | null>(null); // Yeni state
-  const [kurumKontejan, setkurumKontejan] = useState<number | null>(null); // Yeni state
+    const [kurumKontejan, setkurumKontejan] = useState<number | null>(null); // Yeni state
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -64,10 +63,6 @@ const useAuth = (): AuthHookReturn => {
     setErrorMessage(null);
 
     try {
-      if (!auth) {
-        throw { code: 'auth/invalid-api-key' };
-      }
-
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
       const currentUser = userCredential.user;
 
@@ -77,13 +72,9 @@ const useAuth = (): AuthHookReturn => {
       }
 
       // Token'ı al ve cookie'ye kaydet
-      document.cookie = `loggedIn=true; path=/; ${rememberMe ? 'max-age=3600' : ''}`
+    document.cookie = `loggedIn=true; path=/; ${rememberMe ? 'max-age=3600' : ''}`
 
       // Kullanıcı dokümanını getir
-      if (!db) {
-        throw { code: 'auth/invalid-api-key' };
-      }
-      
       const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
       if (!userDoc.exists() || !userDoc.data()?.kurum) {
         await signOut(auth);
@@ -93,7 +84,7 @@ const useAuth = (): AuthHookReturn => {
       // Kurum bilgilerini ayarla
       setKurum(userDoc.data()?.kurum || null);
       setKurumId(userDoc.data()?.kurumId || null); // Kurum ID'yi ayarla
-      setkurumKontejan(userDoc.data()?.kurumKontejan ?? null); // Yeni eklenen satır
+              setkurumKontejan(userDoc.data()?.kurumKontejan ?? null); // Yeni eklenen satır
 
       setIsStudent(userDoc.data()?.isStudent || false);
 
@@ -117,16 +108,12 @@ const useAuth = (): AuthHookReturn => {
   const checkUserRole = async (uid: string) => {
     try {
       setIsLoading(true);
-      if (!db) {
-        throw { code: 'auth/invalid-api-key' };
-      }
-      
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         setIsStudent(userDoc.data()?.isStudent ?? false);
         setKurum(userDoc.data()?.kurum ?? null);
         setKurumId(userDoc.data()?.kurumId ?? null); // Kurum ID'yi güncelle
-        setkurumKontejan(userDoc.data()?.kurumKontejan ?? null); // Yeni eklenen satır
+              setkurumKontejan(userDoc.data()?.kurumKontejan ?? null); // Yeni eklenen satır
 
       } else {
         setIsStudent(false);
@@ -145,15 +132,13 @@ const useAuth = (): AuthHookReturn => {
   const signOutHandler = async () => {
     setIsLoading(true);
     try {
-      if (auth) {
-        await signOut(auth);
-      }
+      await signOut(auth);
       setUser(null);
       setIsStudent(false);
       setKurum(null);
       setKurumId(null); // Çıkış yapınca kurumId'yi de temizle
       // Çerezi sil
-      document.cookie = 'loggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'loggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     
       localStorage.removeItem('saved_email');
     } catch (error) {
@@ -166,9 +151,6 @@ const useAuth = (): AuthHookReturn => {
   const resetPassword = async (email: string) => {
     setIsLoading(true);
     try {
-      if (!auth) {
-        throw { code: 'auth/invalid-api-key' };
-      }
       await sendPasswordResetEmail(auth, email.trim());
     } catch (error) {
       setErrorMessage(handleError(error));
@@ -181,9 +163,6 @@ const useAuth = (): AuthHookReturn => {
     setIsLoading(true);
     try {
       if (!user || !user.email) throw { code: 'auth/no-current-user' };
-      if (!auth) {
-        throw { code: 'auth/invalid-api-key' };
-      }
 
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credential);
@@ -196,10 +175,6 @@ const useAuth = (): AuthHookReturn => {
   };
 
   useEffect(() => {
-    if (!auth) {
-      return () => {};
-    }
-
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         await checkUserRole(currentUser.uid);

@@ -21,7 +21,7 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     // Metadata URL
-    NEXT_PUBLIC_METADATA_BASE_URL: 'https://ogrenio.github.io'
+    NEXT_PUBLIC_METADATA_BASE_URL: 'https://ogrenio.com.tr/'
   }
 };
 

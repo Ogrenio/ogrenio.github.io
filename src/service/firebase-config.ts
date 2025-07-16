@@ -1,9 +1,8 @@
 // firebase-config.ts
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getAuth, Auth } from "firebase/auth";
 
-// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,36 +13,27 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Tarayıcı ortamında çalışıyoruz mu?
-const isBrowser = typeof window !== 'undefined';
+let app: FirebaseApp;
+let db: Firestore;
+let auth: Auth;
 
-// Lazy initialize
-let app: FirebaseApp | undefined = undefined;
-let db: any = undefined;
-let auth: any = undefined;
+// Sadece client-side'da ve daha önce initialize edilmemişse
+if (typeof window !== 'undefined' && !getApps().length) {
+  // Tüm required config değerlerinin mevcut olduğunu kontrol et
+  const isConfigValid = Object.values(firebaseConfig).every(
+    (value) => value !== undefined && value !== ''
+  );
 
-// İstemci tarafında Firebase'i başlat
-if (isBrowser && !app) {
-  try {
-    // Yapılandırma değerlerini kontrol et
-    const missingConfigs = Object.entries(firebaseConfig)
-      .filter(([_, value]) => !value)
-      .map(([key]) => key);
-    
-    if (missingConfigs.length > 0) {
-      throw new Error(`Missing Firebase configuration values`);
+  if (!isConfigValid) {
+    console.error('Firebase config is missing or incomplete');
+  } else {
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      auth = getAuth(app);
+    } catch (error) {
+      console.error('Firebase initialization error', error);
     }
-
-    const apps = getApps();
-    app = apps.length ? apps[0] : initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    auth = getAuth(app);
-  } catch (error) {
-    console.error("Firebase initialization error:", error);
-    // Hata durumunda undefined döndür
-    app = undefined;
-    db = undefined;
-    auth = undefined;
   }
 }
 

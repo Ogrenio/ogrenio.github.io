@@ -6,9 +6,6 @@ import { User, addUserToKurum, getKurumUsers,  removeUserFromKurum // Bu satır�
  } from '@/service/userService'
 import useAuth from "@/service/auth"
 import { toast } from 'react-hot-toast'
-import { useRouter } from 'next/navigation'
-import { auth } from '@/service/firebase-config'
-import { User as FirebaseUser } from 'firebase/auth'
 
 const DashboardPage = () => {
   const [isMounted, setIsMounted] = useState(false)
@@ -24,7 +21,6 @@ const DashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const usersPerPage = 5
-  const router = useRouter()
 
   const handleRemoveUser = async (userId: string) => {
   if (!kurumId) {
@@ -44,7 +40,6 @@ const DashboardPage = () => {
     }
   }
 };
-
   useEffect(() => {
     setIsMounted(true)
     const fetchUsers = async () => {
@@ -65,29 +60,6 @@ const DashboardPage = () => {
 
     fetchUsers()
   }, [kurumId])
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Firebase oturum durumunu kontrol et
-        const unsubscribe = auth.onAuthStateChanged((user: FirebaseUser | null) => {
-          if (!user) {
-            // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
-            router.push('/login');
-          } else {
-            setLoading(false);
-          }
-        });
-        
-        return () => unsubscribe();
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push('/login');
-      }
-    };
-    
-    checkAuth();
-  }, [router]);
 
   const handleAddUser = async () => {
     if (!newUser.email || !kurumId) {
@@ -126,21 +98,25 @@ const DashboardPage = () => {
     }
   }
 
-  const filteredUsers = users.filter(user =>
-    user.isim?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.ogrenciMi && user.studentCode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (!user.ogrenciMi && user.teacherCode?.toLowerCase().includes(searchTerm.toLowerCase())))
+  const filteredUsers = users.filter(user => {
+  const searchTermLower = searchTerm.toLowerCase();
+  return (
+    (user.isim && user.isim.toLowerCase().includes(searchTermLower)) || 
+    (user.email && user.email.toLowerCase().includes(searchTermLower)) ||
+    (user.ogrenciMi && user.studentCode && user.studentCode.toLowerCase().includes(searchTermLower)) ||
+    (!user.ogrenciMi && user.teacherCode && user.teacherCode.toLowerCase().includes(searchTermLower))
+  );
+});
   
   const indexOfLastUser = currentPage * usersPerPage
   const indexOfFirstUser = indexOfLastUser - usersPerPage
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser)
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage)
 
-  if (loading) {
+  if (!isMounted || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-amber-600 text-lg">Yükleniyor...</div>
       </div>
     )
   }
