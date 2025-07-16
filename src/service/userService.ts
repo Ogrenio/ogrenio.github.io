@@ -50,9 +50,9 @@ export const getUsers = async (): Promise<User[]> => {
 export const addUserToKurum = async (userData: {
   email: string,
   kurumId: string
-}, kurumKontejan: number | null) => { // kurumKontejan parametresi eklendi
+}, kurumKontejan: number | null) => {
   try {
-    // 1. Kontenjan kontrolü (eğer kontenjan null değilse)
+    // 1. Kontenjan kontrolü
     if (kurumKontejan !== null) {
       const currentUsers = await getKurumUsers(userData.kurumId);
       if (currentUsers.length >= kurumKontejan) {
@@ -60,43 +60,62 @@ export const addUserToKurum = async (userData: {
       }
     }
 
-    // 2. Kullanıcıyı email ile bul
+    // 2. Kullanıcıyı email ile bul (case-insensitive)
     const usersRef = collection(db, 'users');
-    const q = query(usersRef, where('email', '==', userData.email));
+    const q = query(usersRef, where('email', '==', userData.email.toLowerCase()));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      throw new Error('Kullanıcı bulunamadı');
+      throw new Error(`"${userData.email}" email adresine sahip kullanıcı bulunamadı`);
     }
 
     const userDoc = querySnapshot.docs[0];
     const userId = userDoc.id;
+    const userDataFromDB = userDoc.data();
 
     // 3. Kullanıcı zaten bu kuruma kayıtlı mı kontrol et
     const currentUsers = await getKurumUsers(userData.kurumId);
-    const isUserAlreadyInKurum = currentUsers.some(user => user.id === userId);
-    if (isUserAlreadyInKurum) {
-      throw new Error('Bu kullanıcı zaten kuruma kayıtlı');
+    if (currentUsers.some(user => user.id === userId)) {
+      throw new Error(`${userDataFromDB.email} zaten bu kuruma kayıtlı`);
     }
 
-    // 4. KurumUsers'a ekle
-    const kurumUsersRef = collection(db, 'kurumUsers');
-    await addDoc(kurumUsersRef, {
-      userId,
-      kurumId: userData.kurumId,
-      email: userData.email,
-      joinDate: new Date().toISOString().split('T')[0]
+    // 4. Premium paket aktivasyonu
+    const now = new Date();
+    const expirationDate = new Date(now);
+    expirationDate.setDate(now.getDate() + 30);
+
+    await addDoc(collection(db, 'purchases'), {
+      userId: userId,
+      userEmail: userDataFromDB.email,
+      productId: 'paket_30_monthly',
+      productName: 'Kurum Aylık Paketi',
+      purchaseDate: now,
+      expirationDate: expirationDate,
+      status: 'completed',
+      kurumId: userData.kurumId
     });
 
-    // 5. Kullanıcının ana kaydını güncelle
+    // 5. Kuruma ekleme
+    await addDoc(collection(db, 'kurumUsers'), {
+      userId,
+      kurumId: userData.kurumId,
+      email: userDataFromDB.email,
+      joinDate: new Date().toISOString()
+    });
+
+    // 6. Kullanıcı kaydını güncelle
     await setDoc(doc(db, 'users', userId), {
-      ...userDoc.data(),
       kurumId: userData.kurumId
     }, { merge: true });
 
-    return userId;
+    return { userId, email: userDataFromDB.email };
+
   } catch (error) {
-    console.error("Error adding user to kurum: ", error);
+    console.error("Kuruma kullanıcı ekleme hatası:", {
+      error,
+      inputEmail: userData.email,
+      kurumId: userData.kurumId
+    });
     throw error;
   }
 }
