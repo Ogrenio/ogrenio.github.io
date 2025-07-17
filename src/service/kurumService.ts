@@ -1,5 +1,5 @@
 import { db } from './firebase-config'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore'
 
 export interface KurumBilgisi {
   id: string
@@ -46,7 +46,6 @@ export const getTumKurumlar = async (): Promise<KurumBilgisi[]> => {
         kurumMap.set(kurumId, {
           ...existing,
           kullaniciSayisi: existing.kullaniciSayisi + 1,
-          // Keep the first user's contact info as representative
           email: existing.email || userData.email || '',
           name: existing.name || userData.name || '',
           phone: existing.phone || userData.phone || '',
@@ -64,6 +63,49 @@ export const getTumKurumlar = async (): Promise<KurumBilgisi[]> => {
     return kurumlar
   } catch (error) {
     console.error("Tüm kurumlar alınırken hata oluştu:", error)
+    throw error
+  }
+}
+
+export const updateKurum = async (kurumId: string, updatedData: Partial<KurumBilgisi>): Promise<void> => {
+  try {
+    const usersQuery = query(collection(db, 'users'), where('kurumId', '==', kurumId))
+    const usersSnapshot = await getDocs(usersQuery)
+    
+    const batchUpdates: Promise<void>[] = []
+    
+    usersSnapshot.forEach(userDoc => {
+      const userRef = doc(db, 'users', userDoc.id)
+      const userUpdates: Record<string, any> = {}
+      
+      // Tüm alanları koşulsuz güncelle
+      if (updatedData.isim !== undefined) {
+        userUpdates.kurum = updatedData.isim
+      }
+      if (updatedData.kontejan !== undefined) {
+        userUpdates.kurumKontejan = updatedData.kontejan
+      }
+      if (updatedData.email !== undefined) {
+        userUpdates.email = updatedData.email
+      }
+      if (updatedData.name !== undefined) {
+        userUpdates.name = updatedData.name
+      }
+      if (updatedData.phone !== undefined) {
+        userUpdates.phone = updatedData.phone
+      }
+      if (updatedData.organization !== undefined) {
+        userUpdates.organization = updatedData.organization
+      }
+      
+      if (Object.keys(userUpdates).length > 0) {
+        batchUpdates.push(updateDoc(userRef, userUpdates))
+      }
+    })
+    
+    await Promise.all(batchUpdates)
+  } catch (error) {
+    console.error("Kurum güncellenirken hata oluştu:", error)
     throw error
   }
 }
