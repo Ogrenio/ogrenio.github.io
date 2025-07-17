@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { 
   FiSearch, FiHome, FiUser, FiMail, FiPhone, 
   FiCalendar, FiDatabase, FiUsers, FiEdit, 
-  FiSave, FiX, FiPlus, FiTrash2 
+  FiSave, FiX, FiPlus, FiTrash2, FiStar 
 } from 'react-icons/fi'
 import { getTumKurumlar, updateKurum } from '@/service/kurumService'
 import { toast } from 'react-hot-toast'
@@ -19,6 +19,7 @@ interface KurumBilgisi {
   phone: string
   createdAt: string
   organization: string
+  premium: boolean
 }
 
 const SuperadminPage = () => {
@@ -34,7 +35,8 @@ const SuperadminPage = () => {
     email: '',
     name: '',
     phone: '',
-    organization: ''
+    organization: '',
+    premium: false
   })
 
   useEffect(() => {
@@ -61,7 +63,8 @@ const SuperadminPage = () => {
       email: kurum.email,
       name: kurum.name,
       phone: kurum.phone,
-      organization: kurum.organization
+      organization: kurum.organization,
+      premium: kurum.premium
     })
   }
 
@@ -87,18 +90,18 @@ const SuperadminPage = () => {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setEditData(prev => ({
       ...prev,
-      [name]: name === 'kontejan' ? (value ? parseInt(value) : null) : value
+      [name]: type === 'checkbox' ? checked : (name === 'kontejan' ? (value ? parseInt(value) : null) : value)
     }))
   }
 
   const handleNewKurumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setNewKurum(prev => ({
       ...prev,
-      [name]: name === 'kontejan' ? (value ? parseInt(value) : null) : value
+      [name]: type === 'checkbox' ? checked : (name === 'kontejan' ? (value ? parseInt(value) : null) : value)
     }))
   }
 
@@ -114,16 +117,13 @@ const SuperadminPage = () => {
       email: '',
       name: '',
       phone: '',
-      organization: ''
+      organization: '',
+      premium: false
     })
   }
 
   const handleSaveNewKurum = async () => {
-    // Burada yeni kurum ekleme işlemini gerçekleştirebilirsiniz
-    // Örnek olarak:
     try {
-      // Bu kısımda Firebase'e yeni kurum ekleme işlemi yapılacak
-      // Şimdilik sadece state'i güncelliyoruz
       const fakeId = `new-${Date.now()}`
       setKurumlar([...kurumlar, {
         ...newKurum,
@@ -139,7 +139,8 @@ const SuperadminPage = () => {
         email: '',
         name: '',
         phone: '',
-        organization: ''
+        organization: '',
+        premium: false
       })
       toast.success('Yeni kurum eklendi (demo)')
     } catch (error) {
@@ -151,14 +152,25 @@ const SuperadminPage = () => {
   const handleDelete = async (kurumId: string) => {
     if (confirm('Bu kurumu silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')) {
       try {
-        // Burada kurum silme işlemi yapılacak
-        // Şimdilik sadece state'den kaldırıyoruz
         setKurumlar(kurumlar.filter(k => k.id !== kurumId))
         toast.success('Kurum silindi (demo)')
       } catch (error) {
         console.error(error)
         toast.error('Kurum silinirken hata oluştu')
       }
+    }
+  }
+
+  const togglePremium = async (kurumId: string, currentPremium: boolean) => {
+    try {
+      await updateKurum(kurumId, { premium: !currentPremium })
+      setKurumlar(kurumlar.map(k => 
+        k.id === kurumId ? { ...k, premium: !currentPremium } : k
+      ))
+      toast.success(`Premium ${!currentPremium ? 'aktif' : 'pasif'} edildi`)
+    } catch (error) {
+      console.error(error)
+      toast.error('Premium durumu değiştirilirken hata oluştu')
     }
   }
 
@@ -259,6 +271,19 @@ const SuperadminPage = () => {
                   className="w-full p-2 border border-gray-300 rounded-md"
                 />
               </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="premium"
+                  id="new-premium"
+                  checked={newKurum.premium}
+                  onChange={handleNewKurumChange}
+                  className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                />
+                <label htmlFor="new-premium" className="ml-2 block text-sm text-gray-700">
+                  Premium Üyelik
+                </label>
+              </div>
             </div>
             <div className="flex justify-end mt-4 space-x-2">
               <button
@@ -294,7 +319,9 @@ const SuperadminPage = () => {
                   : 0
                 
                 return (
-                  <div key={kurum.id} className="border rounded-lg p-4 relative hover:shadow-md transition-shadow">
+                  <div key={kurum.id} className={`border rounded-lg p-4 relative hover:shadow-md transition-shadow ${
+                    kurum.premium ? 'border-amber-400 bg-amber-50' : ''
+                  }`}>
                     {editingId === kurum.id ? (
                       <div className="space-y-3">
                         <div className="flex justify-between">
@@ -365,6 +392,19 @@ const SuperadminPage = () => {
                               className="w-full p-1 border border-gray-300 rounded text-sm"
                             />
                           </div>
+                          <div className="col-span-2 flex items-center">
+                            <input
+                              type="checkbox"
+                              name="premium"
+                              id={`premium-${kurum.id}`}
+                              checked={editData.premium || false}
+                              onChange={handleChange}
+                              className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor={`premium-${kurum.id}`} className="ml-2 block text-xs text-gray-700">
+                              Premium Üyelik
+                            </label>
+                          </div>
                         </div>
                         
                         <div className="flex justify-end space-x-2 pt-2">
@@ -388,6 +428,9 @@ const SuperadminPage = () => {
                           <h3 className="font-medium flex items-center">
                             <FiHome className="mr-2 text-amber-600" />
                             {kurum.isim}
+                            {kurum.premium && (
+                              <FiStar className="ml-2 text-amber-500" title="Premium Üye" />
+                            )}
                           </h3>
                           <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded">
                             ID: {kurum.id}
@@ -434,6 +477,21 @@ const SuperadminPage = () => {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Organizasyon:</span>
                             <span>{kurum.organization}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Premium:</span>
+                            <span>
+                              <button
+                                onClick={() => togglePremium(kurum.id, kurum.premium)}
+                                className={`px-2 py-1 rounded text-xs ${
+                                  kurum.premium 
+                                    ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' 
+                                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                }`}
+                              >
+                                {kurum.premium ? 'Premium Aktif' : 'Premium Değil'}
+                              </button>
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Oluşturulma:</span>

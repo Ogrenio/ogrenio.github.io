@@ -20,6 +20,7 @@ type AuthHookReturn = {
   kurum: string | null; // Bağlı olduğu kurum adı
   kurumId: string | null; // Kurum ID'si
   kurumKontejan: number | null; // Kurum kontenjanı
+  kurumPremium: boolean | null; // Kurum premium durumu (Yeni eklenen)
   isLoading: boolean; // Yükleniyor durumu
   errorMessage: string | null; // Hata mesajı
   login: (email: string, password: string, rememberMe: boolean) => Promise<User | null>; // Giriş fonksiyonu
@@ -42,16 +43,18 @@ const authErrorMessages: Record<string, string> = {
   'auth/institution-not-found': 'Kurum bilgisi bulunamadı. Lütfen yapayline@gmail.com ile iletişime geçiniz',
   'auth/unauthorized': 'Bu işlem için yetkiniz bulunmamaktadır',
   'auth/no-current-user': 'Kullanıcı bilgisi bulunamadı',
+  'auth/premium-required': 'Bu işlemi yapabilmek için kurumunuzun premium üyeliğinin aktif olması gerekmektedir',
 };
 
 const useAuth = (): AuthHookReturn => {
   // State'ler
   const [user, setUser] = useState<User | null>(null);
   const [isStudent, setIsStudent] = useState<boolean>(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false); // Süperadmin state'i
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
   const [kurum, setKurum] = useState<string | null>(null);
   const [kurumId, setKurumId] = useState<string | null>(null);
   const [kurumKontejan, setKurumKontejan] = useState<number | null>(null);
+  const [kurumPremium, setKurumPremium] = useState<boolean | null>(null); // Yeni eklenen state
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -91,6 +94,7 @@ const useAuth = (): AuthHookReturn => {
         
         setIsSuperAdmin(true);
         setUser(currentUser);
+        setKurumPremium(true); // Süperadmin her zaman premium sayılır
         
         // Çerez ayarla
         document.cookie = `loggedIn=true; path=/; ${rememberMe ? 'max-age=3600' : ''}`;
@@ -127,10 +131,18 @@ const useAuth = (): AuthHookReturn => {
         throw { code: 'auth/institution-not-found' };
       }
 
+      // Premium kontrolü
+      const premiumStatus = userDoc.data()?.kurumPremium || false;
+      if (!premiumStatus && !isSuperAdminUser) {
+        await signOut(auth);
+        throw { code: 'auth/premium-required' };
+      }
+
       // State'leri güncelle
       setKurum(userDoc.data()?.kurum || null);
       setKurumId(userDoc.data()?.kurumId || null);
       setKurumKontejan(userDoc.data()?.kurumKontejan ?? null);
+      setKurumPremium(premiumStatus); // Premium durumunu set et
       setIsStudent(userDoc.data()?.isStudent || false);
       setIsSuperAdmin(false); // Normal kullanıcılar için false
 
@@ -178,16 +190,19 @@ const useAuth = (): AuthHookReturn => {
         setKurum(userDoc.data()?.kurum ?? null);
         setKurumId(userDoc.data()?.kurumId ?? null);
         setKurumKontejan(userDoc.data()?.kurumKontejan ?? null);
+        setKurumPremium(userDoc.data()?.kurumPremium ?? false); // Premium durumunu güncelle
       } else {
         // Kullanıcı doc yok ama email yapayline ise
         if (auth.currentUser?.email === 'yapayline@gmail.com') {
           setIsSuperAdmin(true);
+          setKurumPremium(true); // Süperadmin her zaman premium
         } else {
           setIsSuperAdmin(false);
           setIsStudent(false);
           setKurum(null);
           setKurumId(null);
           setKurumKontejan(null);
+          setKurumPremium(null);
         }
       }
     } catch (error) {
@@ -204,10 +219,11 @@ const useAuth = (): AuthHookReturn => {
       await signOut(auth);
       setUser(null);
       setIsStudent(false);
-      setIsSuperAdmin(false); // Çıkışta süperadmin durumunu sıfırla
+      setIsSuperAdmin(false);
       setKurum(null);
       setKurumId(null);
       setKurumKontejan(null);
+      setKurumPremium(null); // Çıkışta premium durumunu sıfırla
       
       // Çerezi sil
       document.cookie = 'loggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -260,6 +276,7 @@ const useAuth = (): AuthHookReturn => {
         setKurum(null);
         setKurumId(null);
         setKurumKontejan(null);
+        setKurumPremium(null);
       }
     });
 
@@ -270,10 +287,11 @@ const useAuth = (): AuthHookReturn => {
   return {
     user,
     isStudent,
-    isSuperAdmin, // Süperadmin durumu
+    isSuperAdmin,
     kurum,
     kurumId,
     kurumKontejan,
+    kurumPremium, // Yeni eklenen premium durumu
     isLoading,
     errorMessage,
     login,
