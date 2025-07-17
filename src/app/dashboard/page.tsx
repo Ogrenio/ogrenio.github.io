@@ -1,16 +1,19 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { FiPlus, FiTrash2,  FiSearch, FiUser, FiMail, FiChevronLeft, FiChevronRight, FiHome, FiBook, FiUsers } from 'react-icons/fi'
+import { FiPlus, FiTrash2,  FiSearch, FiUser, FiMail, FiChevronLeft, FiChevronRight, FiHome, FiBook, FiUsers, FiShield } from 'react-icons/fi'
 import { User, addUserToKurum, getKurumUsers,  removeUserFromKurum // Bu satırı ekleyin
  } from '@/service/userService'
 import useAuth from "@/service/auth"
 import { toast } from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 const DashboardPage = () => {
+    const router = useRouter() // useRouter'ı kullanıma aldık
+
   const [isMounted, setIsMounted] = useState(false)
   const [users, setUsers] = useState<User[]>([])
-  const { user,kurumKontejan, isStudent, kurum, kurumId } = useAuth()
+  const { user,kurumKontejan, isStudent, kurum, kurumId,isSuperAdmin  } = useAuth()
   const [loading, setLoading] = useState(true)
   const [newUser, setNewUser] = useState({
     email: '',
@@ -40,6 +43,10 @@ const DashboardPage = () => {
     }
   }
 };
+// Süperadmin paneline yönlendirme fonksiyonu
+  const navigateToSuperAdminPanel = () => {
+    router.push('/superadmin')
+  }
   useEffect(() => {
     setIsMounted(true)
     const fetchUsers = async () => {
@@ -124,6 +131,18 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Süperadmin butonu - sadece isSuperAdmin true ise göster */}
+        {isSuperAdmin && (
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={navigateToSuperAdminPanel}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            >
+              <FiShield className="mr-2 h-4 w-4" />
+              Süperadmin Paneli
+            </button>
+          </div>
+        )}
         {user && (
           <div className="bg-white shadow rounded-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
